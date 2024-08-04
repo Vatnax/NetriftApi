@@ -1,0 +1,19 @@
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - storage:/app/db/
+    networks:
+      - network
+    ports:
+      - 5000:5000
+      - 5001:5001
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  storage:

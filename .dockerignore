@@ -1,0 +1,11 @@
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/.DS_Store
+**/*.db
+.dockerignore
+.gitignore
+.git
+LICENSE
+docker-compose.yml
