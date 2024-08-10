@@ -9,3 +9,5 @@
 .git
 LICENSE
 docker-compose.yml
+**/logs
+gitmessage.txt
