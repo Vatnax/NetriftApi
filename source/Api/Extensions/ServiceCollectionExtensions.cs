@@ -1,4 +1,6 @@
+using Netrift.Application.CQRS.Behaviors;
 using Netrift.Application;
+using FluentValidation;
 
 namespace Api.Extensions;
 
@@ -24,7 +26,10 @@ public static class ServiceCollectionExtensions
     serviceCollection.AddMediatR(config =>
     {
       config.RegisterServicesFromAssembly(AssemblyReference.ASSEMBLY_REF);
+      config.AddOpenBehavior(typeof(LoggingBehavior<,>));
+      config.AddOpenBehavior(typeof(ValidationBehavior<,>));
     });
+    serviceCollection.AddValidatorsFromAssembly(AssemblyReference.ASSEMBLY_REF);
 
     return serviceCollection;
   }

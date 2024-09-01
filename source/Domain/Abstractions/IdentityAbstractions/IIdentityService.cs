@@ -1,8 +1,12 @@
-using Netrift.Domain.Core;
+using Domain.Records;
 
 namespace Netrift.Domain.Abstractions.IdentityAbstractions;
 
 public interface IIdentityService
 {
-  public Task<Result<Guid, IEnumerable<string>>> CreateUser(string userName, string email, string password);
+  public Task<UserResponseData?> GetUserById(Guid id);
+  public Task<UserResponseData?> GetUserByEmailOrName(string emailOrName);
+  public Task<(Guid id, IEnumerable<string> errors)> CreateUser(UserRequestData userData);
+  public Task<bool> SignIn(UserCredentials credentials);
+  public Task SignOut();
 }

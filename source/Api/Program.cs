@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Identity;
 using Netrift.Infrastructure.Identity.IdentityEntities;
 using Netrift.Domain.Abstractions.IdentityAbstractions;
 using Netrift.Infrastructure.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,20 +21,38 @@ if (builder.Environment.IsDevelopment())
     options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));
     options.EnableSensitiveDataLogging();
   });
-}
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+  builder.Services.AddEndpointsApiExplorer();
+  builder.Services.AddSwaggerGen();
+}
 
 builder.Services.AddLogging();
 
-builder.Services.AddIdentityCore<AppUser>().AddEntityFrameworkStores<AppDbContext>();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
-builder.Services.AddAuthorization();
+builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+  // Configure the events for cookie authentication
+  options.Events = new CookieAuthenticationEvents
+  {
+    // When the user is not authenticated, return 401 instead of redirecting
+    OnRedirectToLogin = context =>
+        {
+          context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+          return Task.CompletedTask;
+        },
+    // When the user is authenticated but not authorized, return 403 instead of redirecting
+    OnRedirectToAccessDenied = context =>
+        {
+          context.Response.StatusCode = StatusCodes.Status403Forbidden;
+          return Task.CompletedTask;
+        }
+  };
+});
 
 builder.Services.AddSerilog(options =>
 {
   options.ReadFrom.Configuration(builder.Configuration);
+
 });
 
 builder.Services.AddCleanArchitectureLayers();
@@ -63,6 +84,8 @@ app.UseSerilogRequestLogging(options =>
   options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed} for {RemoteIP} {Agent}";
 });
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 using (IServiceScope serviceScope = app.Services.CreateScope())

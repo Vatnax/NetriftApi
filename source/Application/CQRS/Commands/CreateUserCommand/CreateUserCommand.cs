@@ -1,13 +1,11 @@
-namespace Application.CQRS.Commands.CreateUserCommand;
-
-using System.Diagnostics.CodeAnalysis;
 using Application.DataTransferObjects.RequestDataTransferObjects;
-using Application.DataTransferObjects.ResponseDataTransferObjects;
 using Netrift.Domain.Core;
 using MediatR;
 
+namespace Netrift.Application.CQRS.Commands.CreateUserCommand;
+
 public sealed class CreateUserCommand
-  : IRequest<Result<Guid, IEnumerable<string>>>
+  : IRequest<Result<Guid>>
 {
   public required AppUserRequestDto AppUser { get; init; }
 }
