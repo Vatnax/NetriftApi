@@ -1,8 +1,11 @@
-namespace Domain.Enums;
+namespace Netrift.Domain.Enums;
 
+/// <summary>
+/// Error type enum.
+/// </summary>
 public enum ErrorType
 {
-  None = 2000,
+  None = 200,
   Failure = 400,
   NotFound = 404
 }

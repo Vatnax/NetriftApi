@@ -1,17 +1,26 @@
-using Application.DataTransferObjects.ResponseDataTransferObjects;
+using Netrift.Application.DataTransferObjects.ResponseDataTransferObjects;
 using AutoMapper;
-using Domain.Enums;
-using Domain.Records;
+using Netrift.Domain.Enums;
+using Netrift.Domain.Records;
 using MediatR;
 using Netrift.Domain.Abstractions.IdentityAbstractions;
 using Netrift.Domain.Core;
 
 namespace Netrift.Application.CQRS.Queries.GetUserByIdQuery;
 
+/// <summary>
+/// A CQRS query handler for getting a user.
+/// </summary>
 public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<AppUserResponseDto>>
 {
   private readonly IIdentityService _identityService;
   private readonly IMapper _mapper;
+
+  /// <summary>
+  /// Constructs the handler.
+  /// </summary>
+  /// <param name="identityService">An object that handles the identity.</param>
+  /// <param name="mapper">An object that handles mapping between types.</param>
 
   public GetUserByIdQueryHandler(IIdentityService identityService, IMapper mapper)
   {
@@ -19,15 +28,21 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<
     _mapper = mapper;
   }
 
+  /// <summary>
+  /// Handles the query for getting a user.
+  /// </summary>
+  /// <param name="request">An object containing request information.</param>
+  /// <param name="cancellationToken">A cancellation token.</param>
+  /// <returns>A <see cref="Task"/> with a generic <see cref="Result"/> object with either failure or success depending on the result.</returns>
   public async Task<Result<AppUserResponseDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
   {
-    var user = await _identityService.GetUserById(request.UserId);
+    var user = await _identityService.GetUserByIdAsync(request.UserId);
 
     if (user is not null)
     {
       return Result<AppUserResponseDto>.Success(_mapper.Map<UserResponseData, AppUserResponseDto>(user));
     }
 
-    return Result<AppUserResponseDto>.Failure(["User not found!"], ErrorType.NotFound);
+    return Result<AppUserResponseDto>.FailureWithoutErrorMessages(ErrorType.NotFound);
   }
 }

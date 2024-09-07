@@ -1,7 +1,10 @@
 using Netrift.Domain.Core;
 
-namespace Domain.Exceptions;
+namespace Netrift.Domain.Exceptions;
 
+/// <summary>
+/// Represents an error when non-generic <see cref="Result"/> is used.
+/// </summary>
 [Serializable]
 public class NonGenericResultTypeUsageException : Exception
 {

@@ -1,4 +1,4 @@
-using Api.Extensions;
+using Netrift.Api.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Netrift.Infrastructure.Identity.IdentityEntities;
 using Netrift.Domain.Abstractions.IdentityAbstractions;
 using Netrift.Infrastructure.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

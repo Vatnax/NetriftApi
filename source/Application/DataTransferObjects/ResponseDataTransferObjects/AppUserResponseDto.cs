@@ -1,5 +1,8 @@
-namespace Application.DataTransferObjects.ResponseDataTransferObjects;
+namespace Netrift.Application.DataTransferObjects.ResponseDataTransferObjects;
 
+/// <summary>
+/// User data transfer object for responses.
+/// </summary>
 public sealed class AppUserResponseDto
 {
   public Guid Id { get; set; } = default;

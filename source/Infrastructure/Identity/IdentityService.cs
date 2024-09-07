@@ -1,22 +1,30 @@
 using Microsoft.AspNetCore.Identity;
 using Netrift.Domain.Abstractions.IdentityAbstractions;
 using Netrift.Infrastructure.Identity.IdentityEntities;
-using Domain.Records;
+using Netrift.Domain.Records;
 
 namespace Netrift.Infrastructure.Identity;
 
+/// <summary>
+/// A services that handles identity.
+/// </summary>
 public sealed class IdentityService : IIdentityService
 {
   private readonly UserManager<AppUser> _userManager;
   private readonly SignInManager<AppUser> _signInManager;
 
+  /// <summary>
+  /// Constructs the service.
+  /// </summary>
+  /// <param name="userManager">An object that manages users.</param>
+  /// <param name="signInManager">An object that manages signing-in and signing-out.</param>
   public IdentityService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
   {
     _userManager = userManager;
     _signInManager = signInManager;
   }
 
-  public async Task<(Guid id, IEnumerable<string> errors)> CreateUser(UserRequestData userData)
+  public async Task<(Guid id, IEnumerable<string> errors)> CreateUserAsync(UserRequestData userData)
   {
     AppUser user = new()
     {
@@ -26,10 +34,12 @@ public sealed class IdentityService : IIdentityService
 
     IdentityResult result = await _userManager.CreateAsync(user, userData.Password);
 
-    return (Guid.Parse(user.Id), result.Errors.Select(err => err.Description));
+    return result.Succeeded ?
+      (Guid.Parse(user.Id), []) :
+      (Guid.Empty, result.Errors.Select(err => err.Description));
   }
 
-  public async Task<UserResponseData?> GetUserByEmailOrName(string emailOrName)
+  public async Task<UserResponseData?> GetUserByEmailOrNameAsync(string emailOrName)
   {
     AppUser? user =
       await _userManager.FindByEmailAsync(emailOrName) ??
@@ -43,7 +53,7 @@ public sealed class IdentityService : IIdentityService
     return new UserResponseData(Guid.Parse(user.Id), user.UserName!, user.Email!);
   }
 
-  public async Task<UserResponseData?> GetUserById(Guid id)
+  public async Task<UserResponseData?> GetUserByIdAsync(Guid id)
   {
     AppUser? user = await _userManager.FindByIdAsync(id.ToString());
 
@@ -55,7 +65,7 @@ public sealed class IdentityService : IIdentityService
     return new UserResponseData(id, user.UserName!, user.Email!);
   }
 
-  public async Task<bool> SignIn(UserCredentials credentials)
+  public async Task<bool> SignInAsync(UserCredentials credentials)
   {
     AppUser? user =
       await _userManager.FindByEmailAsync(credentials.EmailOrName) ??
@@ -70,7 +80,7 @@ public sealed class IdentityService : IIdentityService
     return result.Succeeded;
   }
 
-  public async Task SignOut()
+  public async Task SignOutAsync()
   {
     await _signInManager.SignOutAsync();
   }
