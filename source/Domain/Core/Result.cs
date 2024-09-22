@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Netrift.Domain.Enums;
 
 namespace Netrift.Domain.Core;
@@ -39,6 +40,15 @@ public abstract class Result
 public sealed class Result<TSuccess> : Result
 {
   public TSuccess? Value { get; init; }
+
+  /// <summary>
+  /// Constructs a result (no-state) - should only be used with deserialization.
+  /// Please use methods defined in this class to create a valid instance of this class.
+  /// </summary>
+  public Result()
+  {
+
+  }
 
   /// <summary>
   /// Constructs a result (success).

@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
   /// <returns>The service collection with a presentation layer added.</returns>
   private static IServiceCollection AddPresentationLayer(this IServiceCollection serviceCollection)
   {
-    serviceCollection.AddControllers();
+    serviceCollection.AddControllers().AddNewtonsoftJson();
     return serviceCollection;
   }
 
@@ -49,6 +49,7 @@ public static class ServiceCollectionExtensions
       config.RegisterServicesFromAssembly(AssemblyReference.ASSEMBLY_REF);
       config.AddOpenBehavior(typeof(LoggingBehavior<,>));
       config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+      config.AddOpenBehavior(typeof(CachingBehavior<,>));
     });
 
     // Configuring FluentValidations

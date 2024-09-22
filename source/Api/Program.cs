@@ -13,16 +13,39 @@ var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsDevelopment())
 {
+  builder.Services.AddEndpointsApiExplorer();
+  builder.Services.AddSwaggerGen();
+
   // SqLite Database
   builder.Services.AddDbContext<AppDbContext>(options =>
   {
     options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));
     options.EnableSensitiveDataLogging();
   });
-
-  builder.Services.AddEndpointsApiExplorer();
-  builder.Services.AddSwaggerGen();
 }
+else if (builder.Environment.IsStaging())
+{
+  // SqLite Database - to be changed in the future
+  builder.Services.AddDbContext<AppDbContext>(options =>
+  {
+    options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));
+  });
+}
+else if (builder.Environment.IsProduction())
+{
+  // SqLite Database - to be changed in the future
+  builder.Services.AddDbContext<AppDbContext>(options =>
+  {
+    options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));
+  });
+}
+
+
+// Redis (caching)
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+  options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
 
 builder.Services.AddLogging();
 
@@ -71,6 +94,8 @@ if (app.Environment.IsDevelopment())
   app.UseSwaggerUI();
 }
 
+
+app.UseHttpsRedirection();
 app.UseSerilogRequestLogging(options =>
 {
   options.EnrichDiagnosticContext = (diagContext, httpContext) =>
@@ -81,7 +106,6 @@ app.UseSerilogRequestLogging(options =>
 
   options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed} for {RemoteIP} {Agent}";
 });
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

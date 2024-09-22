@@ -41,7 +41,7 @@ public class LoggingBehavior<TRequest, TResponse> :
     var result = await next();
 
     // Logging data with its name and identifier (hash code) - finish.
-    _logger.LogInformation("Finished processing{RequestName}#{RequestHash}. Result: {RequestResult}",
+    _logger.LogInformation("Finished processing {RequestName}#{RequestHash}. Result: {RequestResult}",
       typeof(TRequest).Name, request.GetHashCode(), result.IsSuccess ? "Success" : "Failure");
 
     return result;

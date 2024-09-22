@@ -44,6 +44,7 @@ public class ValidationBehavior<TRequest, TResponse> :
     // Checking if there are any validators
     if (!_validators.Any())
     {
+      _logger.LogInformation("Skipping the validation part because there are no validators to execute.");
       return await next();
     }
 
@@ -57,10 +58,12 @@ public class ValidationBehavior<TRequest, TResponse> :
     // Checking if there are any errors
     if (!validationErrors.Any())
     {
+      _logger.LogInformation("Validation passed!");
       return await next();
     }
 
-    // If there are errors, return a result object
+    // If there are errors, return an error result object
+    _logger.LogInformation("Validation failed!");
     try
     {
       return MakeResultObject(validationErrors);

@@ -4,16 +4,28 @@ services:
       context: ./
       dockerfile: Dockerfile
     volumes:
-      - storage:/app/db/
+      - storage_db:/app/db/
+      - storage_logs:/app/logs
     networks:
       - network
     ports:
-      - 5000:5000
-      - 5001:5001
+      - ${HTTP_PORT}:${HTTP_PORT}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${APP_ENV}
+      - ASPNETCORE_URLS=http://+:${HTTP_PORT}
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - network
 
 networks:
   network:
     driver: bridge
 
 volumes:
-  storage:
+  storage_db:
+  storage_logs:

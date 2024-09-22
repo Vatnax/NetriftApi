@@ -1,5 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
+# Exposing ports
+EXPOSE ${HTTP_PORT}
+
 WORKDIR /src
 
 # Copy all the files
@@ -11,9 +14,8 @@ RUN dotnet nuget locals all --clear
 # Restore all of the dependencies
 RUN dotnet restore
 
-# Change working directory to the entrypoint project's folder
-WORKDIR /src/source/Api
 # Publishing the application
+WORKDIR /src/source/Api
 RUN dotnet publish -c release -o /app --no-restore
 
 # Finishing the image
@@ -21,7 +23,3 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "Api.dll"]
-
-# Exposing ports
-EXPOSE 5000
-EXPOSE 5001

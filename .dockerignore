@@ -1,13 +1,26 @@
+# IDE
 **/.vs
 **/.vscode
+
+# Compliation artifacts
 **/bin
 **/obj
-**/.DS_Store
+
+# Application running artifacts
 **/*.db
+**/logs
+
+# Git & Docker
 .dockerignore
 .gitignore
 .git
-LICENSE
 docker-compose.yml
-**/logs
+Docker
+
+# Configuration-related
+.env
+
+# Miscellaneous
+**/.DS_Store
 gitmessage.txt
+LICENSE
