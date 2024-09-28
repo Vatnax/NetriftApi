@@ -1,8 +1,5 @@
 services:
   api:
-    build:
-      context: ./
-      dockerfile: Dockerfile
     volumes:
       - storage_db:/app/db/
       - storage_logs:/app/logs
