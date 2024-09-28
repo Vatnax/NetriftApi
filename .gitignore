@@ -1,6 +1,15 @@
+# IDE
 **/.vs
 **/.vscode
+
+# Compilation artifacts
 **/bin
 **/obj
-**/.DS_Store
+
+# Application running artifacts
 **/*.db
+**/logs
+
+# Miscellaneous
+**/.DS_Store
+gitmessage.txt

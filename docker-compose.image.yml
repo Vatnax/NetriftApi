@@ -1,0 +1,3 @@
+services:
+  api:
+    image: ghcr.io/vatnax/netrift-api:latest
