@@ -1,0 +1,60 @@
+name: Continuous Delivery
+
+on:
+  workflow_run:
+    workflows: ["Countinuous Integration"]
+    types:
+      - completed
+    #workflow_dispatch:
+
+# Setting up some environmental variables
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: netrift-api
+  AUTHOR: vatnax
+
+jobs:
+  build-and-push-image:
+    # Run this job ONLY if (the CI has been successfull AND it is a merge to main branch) OR it has been called manually 
+    if: >
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push the Docker image
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          push: true
+          # Setting up own tags, not acquired from the metadata
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.AUTHOR }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.AUTHOR }}/${{ env.IMAGE_NAME }}:latest
+
+
+      # Use the digest to generate an artifact attestation
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.AUTHOR }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          # Do NOT push the artifact to the registry
+          push-to-registry: false
