@@ -1,0 +1,56 @@
+name: Countinuous Integration
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+
+  # Builds the project
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: source/global.json
+    - name: Build
+      run: dotnet build source/
+
+  # Unit tests the project
+  test:
+
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: source/global.json
+    - name: Test
+      run: dotnet test source/
+
+  # Lints the project
+  lint:
+  
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: source/global.json
+    - name: Lint style
+      run: dotnet format style source/ --verify-no-changes
+    - name: Lint analyzers
+      run: dotnet format analyzers source/ --verify-no-changes --exclude Tests # Tests don't really need to be analyzed so it is convenient to simply omit the tests
